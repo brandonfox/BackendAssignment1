@@ -1,12 +1,22 @@
 package brandon.backend.backendAssignment1Manager
 
-import brandon.backend.backendAssignment1Manager.ResultParser.JsonParseStrategy
-import brandon.backend.backendAssignment1Manager.Scaling.ThreadRequestManager
+import brandon.backend.backendAssignment1Manager.resultParser.HtmlParseStrategy
+import brandon.backend.backendAssignment1Manager.resultParser.JsonParseStrategy
+import brandon.backend.backendAssignment1Manager.resultParser.ParseStrategy
+import brandon.backend.backendAssignment1Manager.resultParser.TextParseStrategy
+import brandon.backend.backendAssignment1Manager.scaling.ThreadRequestManager
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.async.DeferredResult
 
 @RestController
-class WebController{
+class WebController() {
+
+    private final val parseStrats = HashMap<String,ParseStrategy>()
+
+    init {
+        parseStrats["application/json"] = JsonParseStrategy
+        parseStrats["text/plain"] = TextParseStrategy
+    }
 
     @GetMapping("/wc")
     @ResponseBody
@@ -14,7 +24,8 @@ class WebController{
                      @RequestParam(defaultValue = "false") force: Boolean,
                      @RequestHeader(required = false) Accept: String): DeferredResult<String> {
         val asyncResult = DeferredResult<String>()
-        ThreadRequestManager.addRequest(url, { asyncResult.setResult(JsonParseStrategy.parseWebResult(it)) }, force)
+        val result = if(parseStrats.containsKey(Accept)) parseStrats[Accept] else HtmlParseStrategy
+        ThreadRequestManager.addRequest(url, { asyncResult.setResult(result!!.parseWebResult(it)) }, force)
         return asyncResult
     }
 }

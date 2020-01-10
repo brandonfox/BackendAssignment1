@@ -49,8 +49,12 @@
 			<artifactId>json</artifactId>
 			<version>20190722</version>
 		</dependency>
-
-
+		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.20</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

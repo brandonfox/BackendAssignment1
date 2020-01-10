@@ -1,6 +1,6 @@
-package brandon.backend.backendAssignment1Manager.Scaling
+package brandon.backend.backendAssignment1Manager.scaling
 
-import brandon.backend.backendAssignment1Manager.WebResult.WebCounter
+import brandon.backend.backendAssignment1Manager.webResult.WebCounter
 import java.util.concurrent.Executors
 
 object ThreadRequestManager : AbstractRequestManager() {

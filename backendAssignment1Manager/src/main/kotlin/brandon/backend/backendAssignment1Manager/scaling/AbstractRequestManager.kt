@@ -1,6 +1,6 @@
-package brandon.backend.backendAssignment1Manager.Scaling
+package brandon.backend.backendAssignment1Manager.scaling
 
-import brandon.backend.backendAssignment1Manager.WebResult.WebResult
+import brandon.backend.backendAssignment1Manager.webResult.WebResult
 import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.collections.HashMap
