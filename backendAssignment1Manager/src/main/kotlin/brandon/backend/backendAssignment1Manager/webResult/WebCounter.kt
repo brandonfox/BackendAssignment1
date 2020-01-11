@@ -22,12 +22,15 @@ class WebCounter constructor(val url: String, val callback: (r: WebResult) -> Un
 
     private fun getTop10(words: Map<String,Int>): List<String>{
         val lst = ArrayList<String>(10)
-        val q = PriorityQueue<Pair<String,Int>>(Comparator{ o1, o2 -> o1.second - o2.second })
+        val q = PriorityQueue<Pair<String,Int>>(Comparator{ o1, o2 -> o2.second - o1.second })
         for(k in words.keys){
             q.add(Pair(k, words[k] ?: error("This shouldn't happen. Map has key with no value")))
         }
         for(i in 0 until 10) {
-            lst.add(q.poll().first)
+            val next = q.poll()
+            if(next != null) {
+                lst.add(next.first)
+            }
         }
         return lst
     }

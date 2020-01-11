@@ -7,13 +7,14 @@ import java.io.StringWriter
 
 object HtmlParseStrategy : ParseStrategy() {
 
-    val freeCfg = Configuration()
+    private val freeCfg = Configuration()
 
     init{
         freeCfg.setClassForTemplateLoading(this.javaClass,"/templates/")
     }
 
-    override fun parseWebResult(result: WebResult): String {
+    override fun parseWebResult(result: WebResult): String
+    {
         val template: Template = freeCfg.getTemplate("output.ftl")
         val w = StringWriter()
         val dataModel = HashMap<String, Any>()

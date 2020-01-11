@@ -4,7 +4,8 @@ import brandon.backend.backendAssignment1Manager.webResult.WebResult
 
 object TextParseStrategy : ParseStrategy() {
 
-    override fun parseWebResult(result: WebResult): String {
+    override fun parseWebResult(result: WebResult): String
+    {
         val sb = StringBuilder()
         sb.append("total_words=${result.total_words}")
         sb.append(",top10=[")

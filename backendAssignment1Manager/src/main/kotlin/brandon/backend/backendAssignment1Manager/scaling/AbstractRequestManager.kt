@@ -7,10 +7,14 @@ import kotlin.collections.HashMap
 
 abstract class AbstractRequestManager {
 
+    //TODO Make request managers use same cache
+
     protected val timeoutTime = 60000 //1 min in milliseconds
+    private val cacheSizeLimit = 3 //TODO change 5 to bigger number after testing
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     private val cacheMap: HashMap<String,WebResult> = HashMap()
+    private val cacheTimeMap = PriorityQueue<Pair<String,Long>>(UrlTimeComparator())
 
     private val urlRequests = HashMap<String, ArrayList<(r: WebResult) -> Unit>>()
     protected val requestQ: LinkedList<Pair<String, (r: WebResult) -> Unit>> = LinkedList()
@@ -45,9 +49,33 @@ abstract class AbstractRequestManager {
         }
         urlsRequested.remove(url)
         urlRequests[url]!!.clear()
-        cacheMap[url] = result
+
+        updateCache(url,result)
 
         processNextRequest()
+    }
+
+    private fun updateCache(url: String, result: WebResult){
+        if(cacheMap.containsKey(url)){
+            logger.info("Result already cached. Updating cache")
+            cacheTimeMap.remove(Pair<String,Long>(url,0))
+        }
+        if(cacheMap.size > cacheSizeLimit){
+            logger.info("Cache limit exceeded. Removing oldest cached record")
+            val oldest = cacheTimeMap.poll()
+            cacheMap.remove(oldest.first)
+        }
+        cacheTimeMap.add(Pair(url,result.resultTime))
+        cacheMap[url] = result
+    }
+
+    private class UrlTimeComparator : Comparator<Pair<String,Long>> {
+
+        override fun compare(o1: Pair<String, Long>?, o2: Pair<String, Long>?): Int {
+            if(o1!!.first == o2!!.first) return 0
+            return o1.second.compareTo(o2.second)
+        }
+
     }
 
 }

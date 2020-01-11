@@ -5,7 +5,8 @@ import org.json.JSONObject
 
 object JsonParseStrategy : ParseStrategy() {
 
-    override fun parseWebResult(result: WebResult): String {
+    override fun parseWebResult(result: WebResult): String
+    {
         val answer = JSONObject()
         answer.put("WordCount",result.total_words)
         answer.put("Words",result.top10)
