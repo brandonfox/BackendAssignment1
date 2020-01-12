@@ -7,17 +7,22 @@ import kotlin.collections.HashMap
 
 class WebCounter constructor(val url: String, val callback: (r: WebResult) -> Unit) : Runnable {
     override fun run() {
-        val d: Document = Jsoup.connect(url).get()
-        val pattern = "[a-zA-Z]{1,20}".toRegex()
-        val matches = pattern.findAll(d.body().text())
-        var wc = 0
-        val wordCounts: HashMap<String,Int> = HashMap()
-        for(m in matches){
-            wc++
-            wordCounts.putIfAbsent(m.value,0)
-            wordCounts[m.value] = wordCounts[m.value]!! + 1
+        try {
+            val d: Document = Jsoup.connect(url).get()
+            val pattern = "[a-zA-Z]{1,20}".toRegex()
+            val matches = pattern.findAll(d.body().text())
+            var wc = 0
+            val wordCounts: HashMap<String, Int> = HashMap()
+            for (m in matches) {
+                wc++
+                wordCounts.putIfAbsent(m.value, 0)
+                wordCounts[m.value] = wordCounts[m.value]!! + 1
+            }
+            callback(WebResult(true,wc, getTop10(wordCounts)))
         }
-        callback(WebResult(wc,getTop10(wordCounts)))
+        catch(e: Exception){
+            callback(WebResult(false,-1,null,e.message.toString()))
+        }
     }
 
     private fun getTop10(words: Map<String,Int>): List<String>{

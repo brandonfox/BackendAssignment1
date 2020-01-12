@@ -5,6 +5,7 @@ import brandon.backend.backendAssignment1Manager.resultParser.JsonParseStrategy
 import brandon.backend.backendAssignment1Manager.resultParser.ParseStrategy
 import brandon.backend.backendAssignment1Manager.resultParser.TextParseStrategy
 import brandon.backend.backendAssignment1Manager.scaling.ThreadRequestManager
+import brandon.backend.backendAssignment1Manager.webResult.WebResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.async.DeferredResult
 
@@ -25,7 +26,13 @@ class WebController() {
                      @RequestHeader(required = false) Accept: String): DeferredResult<String> {
         val asyncResult = DeferredResult<String>()
         val result = if(parseStrats.containsKey(Accept)) parseStrats[Accept] else HtmlParseStrategy
-        ThreadRequestManager.addRequest(url, { asyncResult.setResult(result!!.parseWebResult(it)) }, force)
+        ThreadRequestManager.addRequest(url,
+                {
+                    if(it.success)
+                        asyncResult.setResult(result!!.parseWebResult(it))
+                    else
+                        asyncResult.setErrorResult(it.errorMessage)
+                }, force)
         return asyncResult
     }
 }

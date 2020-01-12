@@ -31,8 +31,8 @@ abstract class AbstractRequestManager {
      */
     private fun initRequest(url:String, callback: (r: WebResult) -> Unit) : Boolean{
         urlRequests.putIfAbsent(url,LinkedList())
-        logger.info("Adding another request to $url. Current size: ${urlRequests[url]!!.size}")
         urlRequests[url]!!.add(callback)
+        logger.info("Adding another request to $url. Current size: ${urlRequests[url]!!.size}")
         if(!urlsRequested.contains(url)){
             requestQ.add(Pair(url, callback))
             urlsRequested.add(url)
@@ -54,8 +54,12 @@ abstract class AbstractRequestManager {
     }
 
     fun finishRequest(url: String, result: WebResult){
-        updateCache(url,result)
+        if(result.success)
+            updateCache(url,result)
+        handleAllRequestForUrl(url,result)
+    }
 
+    private fun handleAllRequestForUrl(url: String, result: WebResult){
         logger.info("Sending result to ${urlRequests[url]!!.size} clients")
 
         while(urlRequests[url]!!.isNotEmpty()){

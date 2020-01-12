@@ -19,7 +19,7 @@ object HtmlParseStrategy : ParseStrategy() {
         val w = StringWriter()
         val dataModel = HashMap<String, Any>()
         dataModel["wordCount"] = result.total_words
-        dataModel["words"] = result.top10
+        dataModel["words"] = result.top10!!
         template.process(dataModel,w)
         return w.toString()
     }

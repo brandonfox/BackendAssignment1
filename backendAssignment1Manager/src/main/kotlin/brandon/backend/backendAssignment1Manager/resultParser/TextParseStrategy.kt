@@ -9,7 +9,7 @@ object TextParseStrategy : ParseStrategy() {
         val sb = StringBuilder()
         sb.append("total_words=${result.total_words}")
         sb.append(",top10=[")
-        for(n in result.top10){
+        for(n in result.top10!!){
             sb.append("$n,")
         }
         sb.deleteCharAt(sb.length-1)
