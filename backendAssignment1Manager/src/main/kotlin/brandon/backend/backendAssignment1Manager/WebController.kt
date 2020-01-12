@@ -5,7 +5,6 @@ import brandon.backend.backendAssignment1Manager.resultParser.JsonParseStrategy
 import brandon.backend.backendAssignment1Manager.resultParser.ParseStrategy
 import brandon.backend.backendAssignment1Manager.resultParser.TextParseStrategy
 import brandon.backend.backendAssignment1Manager.scaling.ThreadRequestManager
-import brandon.backend.backendAssignment1Manager.webResult.WebResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.async.DeferredResult
 

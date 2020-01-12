@@ -8,10 +8,7 @@ import kotlin.collections.HashMap
 
 abstract class AbstractRequestManager {
 
-    //TODO Make request managers use same cache
-
-    protected val timeoutTime = 60000 //1 min in milliseconds
-    private val cacheSizeLimit = 1000 //TODO change 5 to bigger number after testing
+    private val cacheSizeLimit = 1000
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     //TODO Move cache stuff into another class
@@ -23,8 +20,7 @@ abstract class AbstractRequestManager {
     protected val requestQ: LinkedList<Pair<String, (r: WebResult) -> Unit>> = LinkedList()
     private val urlsRequested = HashSet<String>()
 
-    protected abstract fun processNextRequest()
-    protected abstract fun processCacheRequest(url:String,callback: (r: WebResult) -> Unit)
+    protected abstract fun processNextRequest(force: Boolean)
 
     /**
      * Initialises request for queue and others. Returns whether the request has already been requested
@@ -32,7 +28,7 @@ abstract class AbstractRequestManager {
     private fun initRequest(url:String, callback: (r: WebResult) -> Unit) : Boolean{
         urlRequests.putIfAbsent(url,LinkedList())
         urlRequests[url]!!.add(callback)
-        logger.info("Adding another request to $url. Current size: ${urlRequests[url]!!.size}")
+        logger.info("Adding request to $url. Current size: ${urlRequests[url]!!.size}")
         if(!urlsRequested.contains(url)){
             requestQ.add(Pair(url, callback))
             urlsRequested.add(url)
@@ -42,15 +38,8 @@ abstract class AbstractRequestManager {
     }
 
     fun addRequest(url: String, callback: (r: WebResult) -> Unit, force: Boolean){
-        if(force || System.currentTimeMillis() - (cacheMap[url]?.resultTime ?: 0) > ThreadRequestManager.timeoutTime){
-            logger.info("Starting new read request at url: $url")
-            if(!initRequest(url,callback))
-                processNextRequest()
-        }
-        else{
-            logger.info("Sending cached result for url: $url")
-            processCacheRequest(url,callback)
-        }
+        if(!initRequest(url,callback))
+            processNextRequest(force)
     }
 
     fun finishRequest(url: String, result: WebResult){
@@ -66,13 +55,10 @@ abstract class AbstractRequestManager {
             urlRequests[url]!!.poll()(result)
         }
         urlsRequested.remove(url)
-
-        processNextRequest()
     }
 
     private fun updateCache(url: String, result: WebResult){
         if(cacheMap.containsKey(url)){
-            logger.info("Result already cached. Updating cache")
             cacheTimeMap.remove(Pair<String,Long>(url,0))
         }
         if(cacheMap.size > cacheSizeLimit){

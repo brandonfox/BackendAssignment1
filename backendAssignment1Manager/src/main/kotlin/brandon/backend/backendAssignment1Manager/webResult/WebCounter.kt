@@ -2,13 +2,24 @@ package brandon.backend.backendAssignment1Manager.webResult
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.collections.HashMap
 
-class WebCounter constructor(val url: String, val callback: (r: WebResult) -> Unit) : Runnable {
+class WebCounter constructor(val url: String, val force: Boolean = true, val callback: (r:WebResult) -> Unit, val cacheMap: Map<String, WebResult>? = null, val cacheCallback:((r:WebResult) -> Unit)? = null) : Runnable {
+
+    val logger = LoggerFactory.getLogger(this.javaClass)
+
     override fun run() {
         try {
-            val d: Document = Jsoup.connect(url).get()
+            val c = Jsoup.connect(url)
+            val d: Document = c.get()
+            val etag = c.response().header("Etag")
+            if(cacheMap?.get(url) != null && cacheMap[url]?.etag != null && cacheMap[url]?.etag == etag){
+                logger.info("ETag at $url matches record. Returning cached version")
+                callback((cacheMap[url] ?: error("Kotlin library has a bug in checking for null values")).copy())
+                return
+            }
             val pattern = "[a-zA-Z]{1,20}".toRegex()
             val matches = pattern.findAll(d.body().text())
             var wc = 0
@@ -18,7 +29,7 @@ class WebCounter constructor(val url: String, val callback: (r: WebResult) -> Un
                 wordCounts.putIfAbsent(m.value, 0)
                 wordCounts[m.value] = wordCounts[m.value]!! + 1
             }
-            callback(WebResult(true,wc, getTop10(wordCounts)))
+            callback(WebResult(true,wc, getTop10(wordCounts),etag))
         }
         catch(e: Exception){
             callback(WebResult(false,-1,null,e.message.toString()))
