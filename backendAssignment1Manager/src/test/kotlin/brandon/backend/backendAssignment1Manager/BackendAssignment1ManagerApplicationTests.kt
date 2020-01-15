@@ -205,7 +205,7 @@ class BackendAssignment1ManagerApplicationTests {
 	}
 
 	fun sendUnblockingRequest(url: String, expectedOutput: String, callback: ((con: HttpURLConnection,time: Long) -> Unit)? = null, headers: Map<String,String>? = null){
-		val u = URL("http://127.0.0.1:8080/wc?url=$url")
+		val u = URL("http://127.0.0.1:8080/wc?target=$url")
 		GlobalScope.launch {
 			val startTime = System.currentTimeMillis()
 			with(u.openConnection() as HttpURLConnection) {

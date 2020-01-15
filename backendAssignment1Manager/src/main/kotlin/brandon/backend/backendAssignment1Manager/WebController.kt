@@ -21,13 +21,13 @@ class WebController() {
 
     @GetMapping("/wc")
     @ResponseBody
-    fun getWordCount(@RequestParam(required = true) url: String,
+    fun getWordCount(@RequestParam(required = true) target: String,
                      @RequestParam(defaultValue = "false") force: Boolean,
                      @RequestHeader(required = false) Accept: String,
                      response: HttpServletResponse): DeferredResult<String> {
         val asyncResult = DeferredResult<String>()
         val result = if(parseStrats.containsKey(Accept)) parseStrats[Accept] else HtmlParseStrategy
-        ThreadRequestManager.addRequest(url,
+        ThreadRequestManager.addRequest(target,
                 {
                     if(it.success) {
                         if (it.wasCached) response.setHeader("Cached", "True")
