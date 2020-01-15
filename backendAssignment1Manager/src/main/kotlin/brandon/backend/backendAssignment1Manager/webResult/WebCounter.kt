@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.collections.HashMap
 
-class WebCounter constructor(val url: String, val force: Boolean = true, val callback: (r:WebResult) -> Unit, val cacheMap: Map<String, WebResult>? = null, val cacheCallback:((r:WebResult) -> Unit)? = null) : Runnable {
+class WebCounter constructor(private val url: String, val force: Boolean = true, val callback: (r:WebResult) -> Unit, private val cacheMap: Map<String, WebResult>? = null, val cacheCallback:((r:WebResult) -> Unit)? = null) : Runnable {
 
     val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -15,9 +15,11 @@ class WebCounter constructor(val url: String, val force: Boolean = true, val cal
             val c = Jsoup.connect(url)
             val d: Document = c.get()
             val etag = c.response().header("Etag")
-            if(cacheMap?.get(url) != null && cacheMap[url]?.etag != null && cacheMap[url]?.etag == etag){
+            if(!force && (cacheMap?.get(url) != null && cacheMap[url]?.etag != null && cacheMap[url]?.etag == etag)){
                 logger.info("ETag at $url matches record. Returning cached version")
-                callback((cacheMap[url] ?: error("Kotlin library has a bug in checking for null values")).copy())
+                val result = (cacheMap[url] ?: error("Kotlin library has a bug in checking for null values")).copy()
+                result.setCached()
+                callback(result)
                 return
             }
             val pattern = "[a-zA-Z]{1,20}".toRegex()

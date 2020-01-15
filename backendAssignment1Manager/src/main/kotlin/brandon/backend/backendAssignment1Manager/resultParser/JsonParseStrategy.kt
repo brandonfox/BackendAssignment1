@@ -3,7 +3,7 @@ package brandon.backend.backendAssignment1Manager.resultParser
 import brandon.backend.backendAssignment1Manager.webResult.WebResult
 import org.json.JSONObject
 
-object JsonParseStrategy : ParseStrategy() {
+object JsonParseStrategy : ParseStrategy {
 
     override fun parseWebResult(result: WebResult): String
     {

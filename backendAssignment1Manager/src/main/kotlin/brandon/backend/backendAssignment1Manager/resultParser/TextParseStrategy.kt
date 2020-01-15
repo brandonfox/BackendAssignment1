@@ -2,7 +2,7 @@ package brandon.backend.backendAssignment1Manager.resultParser
 
 import brandon.backend.backendAssignment1Manager.webResult.WebResult
 
-object TextParseStrategy : ParseStrategy() {
+object TextParseStrategy : ParseStrategy {
 
     override fun parseWebResult(result: WebResult): String
     {

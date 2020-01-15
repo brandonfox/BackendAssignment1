@@ -2,8 +2,8 @@ package brandon.backend.backendAssignment1Manager.resultParser
 
 import brandon.backend.backendAssignment1Manager.webResult.WebResult
 
-abstract class ParseStrategy {
+interface ParseStrategy {
 
-    abstract fun parseWebResult(result: WebResult): String
+    fun parseWebResult(result: WebResult): String
 
 }

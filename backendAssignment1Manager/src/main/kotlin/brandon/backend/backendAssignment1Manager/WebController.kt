@@ -7,6 +7,7 @@ import brandon.backend.backendAssignment1Manager.resultParser.TextParseStrategy
 import brandon.backend.backendAssignment1Manager.scaling.ThreadRequestManager
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.async.DeferredResult
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 class WebController() {
@@ -22,13 +23,16 @@ class WebController() {
     @ResponseBody
     fun getWordCount(@RequestParam(required = true) url: String,
                      @RequestParam(defaultValue = "false") force: Boolean,
-                     @RequestHeader(required = false) Accept: String): DeferredResult<String> {
+                     @RequestHeader(required = false) Accept: String,
+                     response: HttpServletResponse): DeferredResult<String> {
         val asyncResult = DeferredResult<String>()
         val result = if(parseStrats.containsKey(Accept)) parseStrats[Accept] else HtmlParseStrategy
         ThreadRequestManager.addRequest(url,
                 {
-                    if(it.success)
+                    if(it.success) {
+                        if (it.wasCached) response.setHeader("Cached", "True")
                         asyncResult.setResult(result!!.parseWebResult(it))
+                    }
                     else
                         asyncResult.setErrorResult(it.errorMessage)
                 }, force)

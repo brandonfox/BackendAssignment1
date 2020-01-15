@@ -5,7 +5,7 @@ import freemarker.template.Configuration
 import freemarker.template.Template
 import java.io.StringWriter
 
-object HtmlParseStrategy : ParseStrategy() {
+object HtmlParseStrategy : ParseStrategy {
 
     private val freeCfg = Configuration()
 
