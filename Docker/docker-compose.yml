@@ -1,0 +1,11 @@
+# Scaling containers with docker-compose.yml
+version: '3.7'
+
+services:
+  web:
+    image: java:alpine
+    ports:
+      - "5678:8080"
+    volumes: 
+      - "./../backendAssignment1Manager/target:/prog"
+    command: ['java','-jar','/prog/backendAssignment1Manager-0.0.1-SNAPSHOT.jar']
