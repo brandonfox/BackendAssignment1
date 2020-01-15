@@ -150,7 +150,7 @@ class BackendAssignment1ManagerApplicationTests {
 		})
 	}
 
-	//@Test
+	@Test
 	fun trafficTest(){
 		val testNos = 100
 
